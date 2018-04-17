@@ -13,8 +13,8 @@ Like this
 ```
 static m2d::FreeRTOS::Task task("Task name", 10, 1024 * 3, [&] {
 	while (1) {
-		this->emitter->update();
-		vTaskDelay(DeviceConfiguration::LEDTaskDelay / portTICK_PERIOD_MS);
+		// Do something
+		vTaskDelay(25 / portTICK_PERIOD_MS);
 	}
 });
 task.run();
