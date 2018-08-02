@@ -11,39 +11,39 @@ namespace m2d
 {
 namespace FreeRTOS
 {
-	class Task
+class Task
+{
+  public:
+	Task(std::string name, int priority, uint32_t stack_size, std::function<void()> task)
 	{
-	public:
-		Task(std::string name, int priority, uint32_t stack_size, std::function<void()> task)
-		{
-			this->name = name;
-			this->priority = priority;
-			this->stack_size = stack_size;
-			this->task = task;
-		}
+		this->name = name;
+		this->priority = priority;
+		this->stack_size = stack_size;
+		this->task = task;
+	}
 
-		~Task()
-		{
-			vTaskDelete(handle);
-		}
+	~Task()
+	{
+		vTaskDelete(handle);
+	}
 
-		void run()
-		{
-			xTaskCreate(task_entry_point, this->name.c_str(), this->stack_size, this, this->priority, &handle);
-		}
+	void run(const BaseType_t core_id = 0)
+	{
+		xTaskCreatePinnedToCore(task_entry_point, this->name.c_str(), this->stack_size, this, this->priority, &handle, core_id);
+	}
 
-	protected:
-		xTaskHandle handle = 0;
-		std::string name;
-		int priority;
-		uint32_t stack_size;
+  protected:
+	xTaskHandle handle = 0;
+	std::string name;
+	int priority;
+	uint32_t stack_size;
 
-		std::function<void()> task;
+	std::function<void()> task;
 
-		static void task_entry_point(void *task_instance)
-		{
-			static_cast<Task *>(task_instance)->task();
-		}
-	};
-}
-}
+	static void task_entry_point(void *task_instance)
+	{
+		static_cast<Task *>(task_instance)->task();
+	}
+};
+} // namespace FreeRTOS
+} // namespace m2d
